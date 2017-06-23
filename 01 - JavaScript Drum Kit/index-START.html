@@ -7,7 +7,6 @@
 </head>
 <body>
 
-
   <div class="keys">
     <div data-key="65" class="key">
       <kbd>A</kbd>
@@ -59,8 +58,36 @@
 
 <script>
 
-</script>
+  function removeTransition(e) {
+    // Skip if its not a transform
+    if (e.propertyName !== 'transform') return;
+    e.target.classList.remove('playing');
+  }
 
+  function playSound(e) {
+    // Is there an element on the page with 'data-key' === e.keyCode
+    // Cache the audio element
+    const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+    const key = document.querySelector(`.key[data-key="${e.keyCode}"]`);
+    // If the keyCode does not match audio elements, audio === null
+    if (!audio) return;
+    // Add playing class for css transitions
+    key.classList.add('playing');
+    // Rewind clip to start
+    audio.currentTime = 0;
+    audio.play();
+  }
+
+  // Grab all the keys and convert to an array for iteration
+  const keys = Array.from(document.querySelectorAll('.key'));
+  // Cannot mass create event listeners to a node list or array,
+  // must do each individually
+  keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+
+  // Attach event listener for keydown
+  window.addEventListener('keydown', playSound);
+
+</script>
 
 </body>
 </html>
